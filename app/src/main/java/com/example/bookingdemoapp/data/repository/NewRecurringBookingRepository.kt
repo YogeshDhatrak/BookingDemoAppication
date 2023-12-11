@@ -6,6 +6,7 @@ import com.example.bookingdemoapp.ui.base.BaseRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import timber.log.Timber
 import javax.inject.Inject
 
 class NewRecurringBookingRepository @Inject constructor(private val apiService: APIService) :
@@ -15,7 +16,9 @@ class NewRecurringBookingRepository @Inject constructor(private val apiService: 
         return flow {
             emit(apiService.getChildren())
         }.map {
-            it
+            val result = it.body()
+            Timber.e("getChildren--->$result")
+            result?.data?.children ?: emptyList()
         }
     }
 }

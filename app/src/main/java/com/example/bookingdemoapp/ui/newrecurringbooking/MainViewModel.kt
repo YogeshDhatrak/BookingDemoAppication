@@ -10,23 +10,27 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val repository: NewRecurringBookingRepository) : BaseViewModel() {
+class MainViewModel @Inject constructor(private val repository: NewRecurringBookingRepository) :
+    BaseViewModel() {
     private val _children = MutableStateFlow<Status<List<Children>>>(Status.Loading)
 
     val children: StateFlow<Status<List<Children>>> = _children
 
     init {
-        fetchChildren()
+        //fetchChildren()
     }
 
-    private fun fetchChildren() {
+    fun fetchChildren() {
         viewModelScope.launch {
-            repository.getChildren().catch { e ->
+            repository.getChildren().catch {e ->
+                Timber.e("fetchChildren-->$e")
                 _children.value = Status.Error(e.toString())
             }.collect {
+                Timber.e("fetchChildren --> $it")
                 _children.value = Status.Success(it)
             }
         }
