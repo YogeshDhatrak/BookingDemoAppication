@@ -1,6 +1,6 @@
 package com.example.bookingdemoapp.ui.newrecurringbooking
 
-import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -8,17 +8,23 @@ import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import androidx.activity.viewModels
+import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.bookingdemoapp.databinding.ActivityMainBinding
+import com.example.bookingdemoapp.databinding.DaysChipCellBinding
 import com.example.bookingdemoapp.ui.base.BaseActivity
+import com.example.bookingdemoapp.ui.summary.SummaryActivity
+import com.example.bookingdemoapp.ui.summary.SummaryData
 import com.example.bookingdemoapp.utils.NetworkHelper
 import com.example.bookingdemoapp.utils.Status
 import com.example.bookingdemoapp.utils.enableDisableButton
+import com.example.bookingdemoapp.utils.getFormattedDate
 import com.example.bookingdemoapp.utils.showDatePicker
 import com.example.bookingdemoapp.utils.toggleVisibility
+import com.google.android.material.chip.Chip
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -36,6 +42,10 @@ class MainActivity : BaseActivity() {
     private var isRoomSelected = false
     private var isDaySelected = false
 
+    private var bookingReferenceNo = ""
+
+    private val daysList = arrayListOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +60,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun setUpViews() {
+        setupDaysView()
         binding.apply {
             llWho.setOnClickListener {
                 if (!llWhosGoing.isVisible) {
@@ -75,7 +86,8 @@ class MainActivity : BaseActivity() {
                 enableDisableButton()
             }
             btnReviewBooking.setOnClickListener {
-                showToast("Review Button Clicked")
+                //showToast("Review Button Clicked")
+                navigateToSummary()
             }
         }
         enableDisableButton()
@@ -162,11 +174,13 @@ class MainActivity : BaseActivity() {
                     addView(radioButton)
                     setOnCheckedChangeListener(RadioGroup.OnCheckedChangeListener { group, checkedId ->
                         val rb = findViewById<View>(checkedId) as RadioButton
+                        val index = rb.id
                         it.textWho.text = rb.text
                         it.llWho.toggleVisibility(true)
                         it.llWhosGoing.toggleVisibility(false)
+                        bookingReferenceNo = children[index].availableRoomsId ?: ""
                         enableDisableButton()
-                        children[i].availableRoomsId?.let {ids->
+                        children[index].availableRoomsId?.let { ids ->
                             setUpRoomsObserver(ids)
                         }
                     })
@@ -189,7 +203,7 @@ class MainActivity : BaseActivity() {
             binding.let {
                 it.rgChooseRoom.apply {
                     addView(radioButton)
-                    setOnCheckedChangeListener(RadioGroup.OnCheckedChangeListener { group, checkedId ->
+                    setOnCheckedChangeListener(RadioGroup.OnCheckedChangeListener { _, checkedId ->
                         val rb = findViewById<View>(checkedId) as RadioButton
                         it.textWhere.text = rb.text
                         it.llWhere.toggleVisibility(true)
@@ -205,20 +219,62 @@ class MainActivity : BaseActivity() {
         binding.apply {
             isChildrenSelected = rgChildren.checkedRadioButtonId != -1
             isRoomSelected = rgChooseRoom.checkedRadioButtonId != -1
-            //isDaySelected = chipGroup.checkedChipId != -1
             val enableButton =
                 isChildrenSelected && isRoomSelected && isDaySelected && isStartDateSelected && isEndDateSelected
-            Timber.e(
-                "enableDisableButton :\nisChildrenSelected:$isChildrenSelected" +
-                        "\nisRoomSelected:$isRoomSelected " +
-                        "\nisDaySelected:$isDaySelected" +
-                        "\nisStartDateSelected:$isStartDateSelected" +
-                        "\nisEndDateSelected:$isEndDateSelected"
-            )
             btnReviewBooking.enableDisableButton(enableButton)
         }
     }
 
+    private fun setupDaysView() {
+        daysList.forEachIndexed { index, str ->
+            binding.chipGroup.addView(createChip(str, index))
+        }
+    }
+
+   private fun createChip(label: String, index: Int): Chip {
+        val chip = DaysChipCellBinding.inflate(layoutInflater, binding.chipGroup, false).root
+        chip.apply {
+            id = index
+            text = label
+        }
+        return chip
+    }
+
+
+    private fun getSelectedDays(): ArrayList<String> {
+        val selectedDays = arrayListOf<String>()
+        binding.chipGroup.children
+            .toList()
+            .filter { (it as Chip).isChecked }
+            .forEach {
+                val value = (it as Chip).text.toString()
+                selectedDays.add(value)
+            }
+        return selectedDays
+    }
+
+    private fun getSummaryData(): SummaryData {
+        Timber.e("getSummaryData selectedChips:${getSelectedDays()}")
+        val startDate = binding.textStartDate.text.toString()
+        val endDate = binding.textEndDate.text.toString()
+        return SummaryData(
+            childrenName = binding.textWho.text.toString(),
+            roomName = binding.textWhere.text.toString(),
+            startDate = startDate.getFormattedDate(),
+            endDate = endDate.getFormattedDate(),
+            selectedDays = getSelectedDays().joinToString(separator = ","),
+            bookingReferenceNo = bookingReferenceNo
+        )
+    }
+
+    private fun navigateToSummary() {
+        Timber.e("navigateToSummary getSummaryData:${getSummaryData()}")
+        val intent = Intent(
+            this, SummaryActivity::class.java
+        )
+        intent.putExtra("summaryData", getSummaryData())
+        startActivity(intent)
+    }
 
     companion object {
         var isStartDateSelected = false

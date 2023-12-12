@@ -4,6 +4,10 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.Typeface
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.StyleSpan
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -11,7 +15,9 @@ import androidx.core.view.isVisible
 import com.example.bookingdemoapp.R
 import com.example.bookingdemoapp.ui.newrecurringbooking.MainActivity
 import com.google.android.material.button.MaterialButton
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 
 
 fun View.toggleVisibility(isVisible: Boolean) {
@@ -89,4 +95,18 @@ fun TextView.showDatePicker(context: Context, startDate: String = "") {
     }
     datePickerDialog.datePicker.minDate = c.timeInMillis
     datePickerDialog.show()
+}
+
+fun String.getFormattedDate(): String {
+    val date = this
+    val dateFormat: Date = SimpleDateFormat("dd/MM/yyyy").parse(date)!!
+    return SimpleDateFormat("dd MMM yyyy").format(dateFormat)
+}
+
+fun String.getSpannableString(start: Int, end: Int): SpannableString {
+    val str: String = this
+    val spannableString = SpannableString(str)
+    val boldSpan = StyleSpan(Typeface.BOLD)
+    spannableString.setSpan(boldSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+    return spannableString
 }

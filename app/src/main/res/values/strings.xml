@@ -10,13 +10,17 @@
     <string name="label_date">Date</string>
     <string name="label_choose_room">Choose a room</string>
     <string name="label_choose_days">Choose days</string>
-    <string name="label_sunday">Sun</string>
-    <string name="label_monday">Mon</string>
-    <string name="label_tuesday">Tue</string>
-    <string name="label_wednesday">Wed</string>
-    <string name="label_thursday">Thu</string>
-    <string name="label_friday">Fri</string>
-    <string name="label_saturday">Sat</string>
+
+
+    <string name="label_summary">Summary</string>
+    <string name="label_from">From %1$s</string>
+    <string name="label_end">Ends %1$s</string>
+    <string name="label_every">Every %1$s</string>
+    <string name="label_day_count">You are booking  %1$d days</string>
+    <string name="label_booking_reference">Booking Reference Number: \n%1$s</string>
 
     <string name="btn_review_booking">Review bookings</string>
+    <string name="btn_change_booking">Change booking</string>
+    <string name="btn_done">Done</string>
+
 </resources>

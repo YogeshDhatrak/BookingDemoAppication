@@ -4,5 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="btn_active">#3F51B5</color>
     <color name="btn_normal">#A2A2A2</color>
+    <color name="grey">#757575</color>
+    <color name="chip_selected_color">@color/btn_active</color><!--//#F0E8FA-->
 
 </resources>
