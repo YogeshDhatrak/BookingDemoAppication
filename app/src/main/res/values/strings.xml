@@ -1,4 +1,22 @@
 <resources>
     <string name="app_name">BookingDemoApp</string>
     <string name="label_ok">OK</string>
+    <string name="new_recurring_booking">New recurring booking</string>
+    <string name="label_whos_going">Who\'s going?</string>
+    <string name="label_who">Who</string>
+    <string name="label_where">Where</string>
+    <string name="label_start_date">Start Date</string>
+    <string name="label_end_date">End Date</string>
+    <string name="label_date">Date</string>
+    <string name="label_choose_room">Choose a room</string>
+    <string name="label_choose_days">Choose days</string>
+    <string name="label_sunday">Sun</string>
+    <string name="label_monday">Mon</string>
+    <string name="label_tuesday">Tue</string>
+    <string name="label_wednesday">Wed</string>
+    <string name="label_thursday">Thu</string>
+    <string name="label_friday">Fri</string>
+    <string name="label_saturday">Sat</string>
+
+    <string name="btn_review_booking">Review bookings</string>
 </resources>
